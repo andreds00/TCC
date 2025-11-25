@@ -1,0 +1,76 @@
+{
+  "expo": {
+    "name": "Body Moove",
+    "slug": "Body-Moove",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/logoClara.png",
+    "scheme": "bodymoove",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/images/splashscreen_logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      
+      "minSdkVersion": 26,
+
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCjqzmGElJkuDPEDVQQNqsOb-edZYauSto"
+        }
+      },
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/logoClara.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACTIVITY_RECOGNITION"
+      ],
+      "healthConnect": {
+        "permissions": [
+          "steps",
+          "distance",
+          "heartRate",
+          "activeCaloriesBurned"
+        ]
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.anonymous.BodyMoove"
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/logoClara.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-dev-client",
+      "expo-font",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "O app usa sua localização para encontrar locais próximos."
+        }
+      ],
+      "react-native-health-connect"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6d8e9e9e-7633-4a63-839d-4132ad1d4918"
+      }
+    },
+    "owner": "andreds00"
+  }
+}
