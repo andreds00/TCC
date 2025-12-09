@@ -1,6 +1,6 @@
 // app/_layout.tsx
 import React, { useEffect, useRef } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, StatusBar } from "react-native";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -19,13 +19,16 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
 
   return (
-    <AuthProvider>
-      <GestureHandlerRootView style={styles.root}>
-        <SafeAreaProvider style={styles.root}>
-          <MainLayout />
-        </SafeAreaProvider>
-      </GestureHandlerRootView>
-    </AuthProvider>
+    <>
+      <StatusBar barStyle="dark-content" />
+      <AuthProvider>
+        <GestureHandlerRootView style={styles.root}>
+          <SafeAreaProvider style={styles.root}>
+            <MainLayout />
+          </SafeAreaProvider>
+        </GestureHandlerRootView>
+      </AuthProvider>
+    </>
   );
 }
 

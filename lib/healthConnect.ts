@@ -1,70 +1,77 @@
 import { Platform } from "react-native";
 
-// Tentativa de carregar a lib sem quebrar a aplicação
 let HealthConnect: any = null;
 try {
   HealthConnect = require("react-native-health-connect");
 } catch (e) {
-  console.warn("⚠ react-native-health-connect não está disponível (ignorando).");
+  console.warn("react-native-health-connect não está disponível (ignorando).");
 }
 
 const DEFAULT_RESULT = { steps: 0, activeCalories: 0 };
 
 export async function getStepsCaloriesActive() {
   try {
-    // Verifica plataforma
-    if (Platform.OS !== "android") {
-      return DEFAULT_RESULT;
+    if (Platform.OS !== "android") return DEFAULT_RESULT;
+    if (!HealthConnect) return DEFAULT_RESULT;
+
+    const { initialize, readRecords, getGrantedPermissions } = HealthConnect;
+
+    if (!initialize || !readRecords) return DEFAULT_RESULT;
+
+    const isInitialized = await initialize().catch(() => null);
+    if (!isInitialized) return DEFAULT_RESULT;
+
+    let hasStepsPermission = true;
+    let hasCaloriesPermission = true;
+
+    if (typeof getGrantedPermissions === "function") {
+      const granted = await getGrantedPermissions().catch(() => []);
+      if (Array.isArray(granted)) {
+        hasStepsPermission = granted.some(
+          (p: any) => p.recordType === "Steps" && p.accessType === "read"
+        );
+        hasCaloriesPermission = granted.some(
+          (p: any) =>
+            p.recordType === "ActiveCaloriesBurned" && p.accessType === "read"
+        );
+      }
     }
 
-    // Verifica se a lib existe
-    if (!HealthConnect) {
+    if (!hasStepsPermission && !hasCaloriesPermission) {
       return DEFAULT_RESULT;
     }
-
-    const { initialize, requestPermission, readRecords } = HealthConnect;
-
-    console.log("🔄 Tentando inicializar Health Connect...");
-    const ok = await initialize().catch(() => null);
-
-    if (!ok) {
-      console.warn("⚠ Health Connect não iniciou (ignorando erro).");
-      return DEFAULT_RESULT;
-    }
-
-    console.log("🔐 Solicitando permissões...");
-    await requestPermission([
-      { accessType: "read", recordType: "Steps" },
-      { accessType: "read", recordType: "ActiveCaloriesBurned" },
-    ]).catch(() => null);
 
     const endTime = new Date().toISOString();
     const startTime = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
-    // ---- PASSOS ----
-    const stepsResult = await readRecords("Steps", {
-      timeRangeFilter: { operator: "between", startTime, endTime },
-    }).catch(() => ({ records: [] }));
+    let steps = 0;
+    if (hasStepsPermission) {
+      const stepsResult = await readRecords("Steps", {
+        timeRangeFilter: { operator: "between", startTime, endTime },
+      }).catch(() => ({ records: [] }));
 
-    const steps = stepsResult.records?.reduce(
-      (sum: number, r: any) => sum + (r.count ?? 0),
-      0
-    ) ?? 0;
+      steps =
+        stepsResult.records?.reduce(
+          (sum: number, r: any) => sum + (r.count ?? 0),
+          0
+        ) ?? 0;
+    }
 
-    // ---- CALORIAS ----
-    const caloriesResult = await readRecords("ActiveCaloriesBurned", {
-      timeRangeFilter: { operator: "between", startTime, endTime },
-    }).catch(() => ({ records: [] }));
+    let activeCalories = 0;
+    if (hasCaloriesPermission) {
+      const caloriesResult = await readRecords("ActiveCaloriesBurned", {
+        timeRangeFilter: { operator: "between", startTime, endTime },
+      }).catch(() => ({ records: [] }));
 
-    const activeCalories = caloriesResult.records?.reduce(
-      (sum: number, r: any) => sum + (r.energy?.inKilocalories ?? 0),
-      0
-    ) ?? 0;
+      activeCalories =
+        caloriesResult.records?.reduce(
+          (sum: number, r: any) => sum + (r.energy?.inKilocalories ?? 0),
+          0
+        ) ?? 0;
+    }
 
     return { steps, activeCalories };
-
-  } catch (e) {
-    // 🔥 Nunca mais quebra o app
+  } catch {
     return DEFAULT_RESULT;
   }
 }

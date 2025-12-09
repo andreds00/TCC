@@ -1,4 +1,3 @@
-// lib/bluetooth.ts
 import { BleManager, Device, Subscription } from "react-native-ble-plx";
 import { Buffer } from "buffer";
 
@@ -16,25 +15,18 @@ try {
 let monitorSubscription: Subscription | null = null;
 let connectedDevice: Device | null = null;
 
-/** Garante que o manager nunca é null */
 const ensureManager = () => {
   if (!manager) {
     throw new Error(
       "BLE não disponível neste build. Use Dev Client ou APK com react-native-ble-plx."
     );
   }
-
   return manager;
 };
 
 export const isBleAvailable = () => manager !== null;
 
-/** Retorna o manager com segurança */
 export const getManager = () => ensureManager();
-
-/* =================================================================== */
-/* ===========================  SCAN  ================================= */
-/* =================================================================== */
 
 export async function startScan(
   onDeviceFound: (d: Device) => void,
@@ -54,18 +46,16 @@ export async function startScan(
     try {
       const mgr2 = ensureManager();
       mgr2.stopDeviceScan();
-    } catch { }
+    } catch {}
   }, timeout);
 }
 
 export async function stopScan() {
   const mgr = ensureManager();
-  try { mgr.stopDeviceScan(); } catch { }
+  try {
+    mgr.stopDeviceScan();
+  } catch {}
 }
-
-/* =================================================================== */
-/* ========================  CONEXÃO  ================================= */
-/* =================================================================== */
 
 export async function connectToDevice(deviceId: string) {
   const mgr = ensureManager();
@@ -88,7 +78,9 @@ export async function disconnectCurrentDevice() {
     if (!connectedDevice) return;
 
     if (monitorSubscription) {
-      try { monitorSubscription.remove(); } catch { }
+      try {
+        monitorSubscription.remove();
+      } catch {}
       monitorSubscription = null;
     }
 
@@ -100,10 +92,6 @@ export async function disconnectCurrentDevice() {
   }
 }
 
-/* =================================================================== */
-/* ========================= HEART RATE =============================== */
-/* =================================================================== */
-
 export function monitorHeartRate(
   device: Device,
   onHeartRate: (bpm: number) => void
@@ -112,7 +100,9 @@ export function monitorHeartRate(
   const characteristicUUID = "2A37";
 
   if (monitorSubscription) {
-    try { monitorSubscription.remove(); } catch { }
+    try {
+      monitorSubscription.remove();
+    } catch {}
     monitorSubscription = null;
   }
 
@@ -131,9 +121,7 @@ export function monitorHeartRate(
         const buffer = Buffer.from(characteristic.value, "base64");
         const flags = buffer[0];
         const isUINT16 = flags & 0x01;
-        const bpm = isUINT16
-          ? buffer.readUInt16LE(1)
-          : buffer[1];
+        const bpm = isUINT16 ? buffer.readUInt16LE(1) : buffer[1];
 
         onHeartRate(bpm);
       } catch (e) {
@@ -145,14 +133,12 @@ export function monitorHeartRate(
   monitorSubscription = sub;
 
   return () => {
-    try { sub.remove(); } catch { }
+    try {
+      sub.remove();
+    } catch {}
     monitorSubscription = null;
   };
 }
-
-/* =================================================================== */
-/* ======================== RAW CHARACTERISTIC ======================== */
-/* =================================================================== */
 
 export function monitorRawCharacteristic(
   device: Device,
@@ -180,10 +166,6 @@ export function monitorRawCharacteristic(
     }
   );
 }
-
-/* =================================================================== */
-/* ========== Encontra todas characteristics NOTIFY =================== */
-/* =================================================================== */
 
 export async function findNotifyCharacteristics(device: Device) {
   const result: {
@@ -215,10 +197,6 @@ export async function findNotifyCharacteristics(device: Device) {
   return result;
 }
 
-/* =================================================================== */
-/* ========= STEPS + CALORIES (Relógio encontrado no log) ============ */
-/* =================================================================== */
-
 export function monitorStepsAndCalories(
   device: Device,
   onUpdate: (steps: number, calories: number) => void
@@ -239,9 +217,6 @@ export function monitorStepsAndCalories(
 
       try {
         const raw = Buffer.from(characteristic.value, "base64");
-
-        // Seu relógio manda assim:
-        // [.., ?, ?, steps_L, steps_H, calories, ...]
         const steps = raw[3] + (raw[4] << 8);
         const calories = raw[5];
 
@@ -253,18 +228,16 @@ export function monitorStepsAndCalories(
   );
 }
 
-/* =================================================================== */
-/* ========================== DESTROY ================================= */
-/* =================================================================== */
-
 export async function destroyManager() {
   try {
     if (monitorSubscription) {
-      try { monitorSubscription.remove(); } catch { }
+      try {
+        monitorSubscription.remove();
+      } catch {}
       monitorSubscription = null;
     }
 
     const mgr = ensureManager();
     mgr.destroy();
-  } catch { }
+  } catch {}
 }

@@ -26,14 +26,13 @@ import { router, useFocusEffect } from "expo-router";
 import BubbleScanner from "@/src/app/components/BubbleScanner";
 import { getStepsCaloriesActive } from "@/lib/healthConnect";
 
-// FUNÇÃO QUE LÊ QUALQUER CHARACTERISTIC (RAW)
 import { monitorRawCharacteristic, isBleAvailable, getManager } from "@/lib/bluetooth";
+import { Buffer } from "buffer";
 
 let persistentDevice: Device | null = null;
 const setPersistentDevice = (d: Device | null) => (persistentDevice = d);
 const getPersistentDevice = () => persistentDevice;
 
-// FILTRO DE MARCAS
 const WATCH_BRANDS = [
   "Apple",
   "Samsung",
@@ -70,7 +69,6 @@ export default function MeusTreinos() {
   const [loadingHealth, setLoadingHealth] = useState(false);
   const [sourcesSimulated, setSourcesSimulated] = useState<any[]>([]);
 
-  // ================= PERMISSÕES ANDROID =================
   const requestPermissions = async () => {
     if (!bleSupported) {
       Alert.alert(
@@ -83,10 +81,30 @@ export default function MeusTreinos() {
     if (Platform.OS !== "android") return true;
 
     try {
+      if (Platform.Version >= 31) {
+        const results = await PermissionsAndroid.requestMultiple([
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+        ]);
+
+        const denied = Object.values(results).some(
+          (v) => v !== PermissionsAndroid.RESULTS.GRANTED
+        );
+
+        if (denied) {
+          Alert.alert(
+            "Permissões necessárias",
+            "Ative as permissões de Bluetooth (Dispositivos próximos) para continuar."
+          );
+          return false;
+        }
+
+        return true;
+      }
+
       const results = await PermissionsAndroid.requestMultiple([
-        PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
-        PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
       ]);
 
       const denied = Object.values(results).some(
@@ -96,18 +114,18 @@ export default function MeusTreinos() {
       if (denied) {
         Alert.alert(
           "Permissões necessárias",
-          "Ative Bluetooth e Localização para continuar."
+          "Ative a Localização para procurar dispositivos Bluetooth."
         );
         return false;
       }
 
       return true;
-    } catch {
+    } catch (e) {
+      console.log("Erro ao pedir permissões BLE:", e);
       return false;
     }
   };
 
-  // ================= CONECTAR AO RELÓGIO =================
   const connectDevice = async (device: Device) => {
     try {
       setConnectionStatus("connecting");
@@ -120,7 +138,6 @@ export default function MeusTreinos() {
       const conn = await manager.connectToDevice(device.id);
       await conn.discoverAllServicesAndCharacteristics();
 
-      // DEBUG → lista services/characteristics
       try {
         const services = await conn.services();
         for (const service of services) {
@@ -141,10 +158,6 @@ export default function MeusTreinos() {
         console.log("Erro ao listar services:", err);
       }
 
-      // =====================================================
-      // 🔥 MONITORAR PASSOS E CALORIAS AUTOMATICAMENTE
-      // =====================================================
-
       try {
         monitorRawCharacteristic(
           conn,
@@ -152,11 +165,9 @@ export default function MeusTreinos() {
           "00008004-0000-1000-8000-00805f9b34fb",
           (raw) => {
             try {
-              const bytes = Buffer.from(raw);      // sempre converte corretamente
-              const arr = new Uint8Array(bytes);   // Uint8Array garantido
+              const bytes = Buffer.from(raw);
+              const arr = new Uint8Array(bytes);
 
-
-              // ---- DECODIFICAÇÃO UNIVERSAL OEM ----
               const stepsValue = arr[3] + (arr[4] << 8);
               const caloriesValue = arr[5];
 
@@ -173,7 +184,6 @@ export default function MeusTreinos() {
         console.log("Erro monitor 8004:", err);
       }
 
-      // Outras characteristics (opcional)
       try {
         monitorRawCharacteristic(
           conn,
@@ -192,8 +202,6 @@ export default function MeusTreinos() {
         );
       } catch { }
 
-      // =====================================================
-
       setConnectedDevice(conn);
       setConnectionStatus("connected");
       setConnectingDeviceId(null);
@@ -206,7 +214,6 @@ export default function MeusTreinos() {
     }
   };
 
-  // ================= DESCONECTAR =================
   const disconnectDevice = async () => {
     try {
       const dev = connectedDevice || getPersistentDevice();
@@ -224,7 +231,6 @@ export default function MeusTreinos() {
     }
   };
 
-  // ================= SCAN =================
   const startScan = async () => {
     const ok = await requestPermissions();
     if (!ok) return;
@@ -278,7 +284,6 @@ export default function MeusTreinos() {
     }, 10000);
   };
 
-  // ================= HEALTH CONNECT =================
   const loadHealthConnect = async () => {
     if (Platform.OS !== "android") {
       setHealthConnected(false);
@@ -315,7 +320,6 @@ export default function MeusTreinos() {
     }
   };
 
-  // ================= INICIALIZAÇÃO =================
   useEffect(() => {
     if (!bleSupported) {
       setConnectionStatus("error");
@@ -343,7 +347,7 @@ export default function MeusTreinos() {
       }
       if (bleSupported) {
         const manager = getManager();
-      manager.stopDeviceScan();
+        manager.stopDeviceScan();
       }
     };
   }, [bleSupported]);
@@ -384,8 +388,8 @@ export default function MeusTreinos() {
         if (
           connectedDevice?.id === d.id ||
           (d.name &&
-            WATCH_BRANDS.some((b) => d.name!.toLowerCase().includes(b.toLowerCase())))
-        ) {
+            WATCH_BRANDS.some((b) => d.name!.toLowerCase().includes(b.toLowerCase()))
+        )) {
           deviceMap.set(d.id, d);
         }
       });
@@ -478,7 +482,6 @@ export default function MeusTreinos() {
         </TouchableOpacity>
       )}
 
-      {/* BLOCO DO HEALTH CONNECT */}
       <View style={styles.healthBox}>
         <Text style={styles.subtitleList}>Health Connect</Text>
 
@@ -486,7 +489,7 @@ export default function MeusTreinos() {
           <ActivityIndicator size="large" color={colors.darkBlue} />
         ) : healthConnected ? (
           <>
-            <Text style={styles.healthText}>Passos hoje: {steps }</Text>
+            <Text style={styles.healthText}>Passos hoje: {steps}</Text>
             <Text style={styles.healthText}>Calorias ativas: {calories} kcal</Text>
 
             <TouchableOpacity
