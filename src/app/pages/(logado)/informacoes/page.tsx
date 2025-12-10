@@ -35,7 +35,7 @@ export default function InformacoesPessoais() {
   const [selectedGender, setSelectedGender] = useState("");
   const [showGenders, setShowGenders] = useState(false);
 
-  // 🔹 CARREGAR DADOS DO SUPABASE
+ 
   useEffect(() => {
     async function carregarDados() {
       if (!userId) return;
@@ -59,7 +59,7 @@ export default function InformacoesPessoais() {
         setGender(data.gender || "");
         setSelectedGender(data.gender || "");
 
-        // 🔹 Agora com nomes corretos:
+        
         setModalities(data.modality_practiced || "");
         setTrainingDays(data.training_days ? String(data.training_days) : "");
         setHealthIssues(data.health_issues || "");
@@ -70,7 +70,7 @@ export default function InformacoesPessoais() {
     carregarDados();
   }, [userId]);
 
-  // 🔹 SALVAR ALTERAÇÕES
+  
   async function salvarAlteracoes() {
     if (!userId) {
       Alert.alert("Erro", "Usuário não encontrado.");
@@ -79,7 +79,7 @@ export default function InformacoesPessoais() {
 
 
 
-    // Campos obrigatórios
+    
     if (!name || !age || !height || !weight || !selectedGender) {
       Alert.alert("Erro", "Preencha todos os campos obrigatórios.");
       return;
@@ -98,7 +98,7 @@ export default function InformacoesPessoais() {
         weight: parseInt(weight),
         gender: selectedGender,
 
-        // 🔹 Corrigido conforme schema:
+        
         modality_practiced: modalities,
         training_days: trainingDays ? parseInt(trainingDays) : null,
         health_issues: healthIssues,
@@ -122,9 +122,9 @@ export default function InformacoesPessoais() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.white, marginTop: 10 }}>
       <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
-        {/* Cabeçalho */}
+        
         <View style={styles.container}>
           <View style={styles.header}>
             <TouchableOpacity
@@ -139,7 +139,7 @@ export default function InformacoesPessoais() {
           </View>
         </View>
 
-        {/* Conteúdo */}
+        
         <View style={styles.main}>
           <Text style={styles.welcomeText}>Edite suas informações pessoais abaixo:</Text>
 
@@ -169,7 +169,7 @@ export default function InformacoesPessoais() {
             keyboardType="numeric"
           />
 
-          {/* 🔹 GÊNERO */}
+          
           <Text style={styles.labelSearch}>Gênero</Text>
 
           <TouchableOpacity
@@ -250,7 +250,7 @@ export default function InformacoesPessoais() {
   );
 }
 
-// 🔹 INPUT COMPONENT
+
 function LabelInput({ label, placeholder, ...props }: { label: string; placeholder: string; [key: string]: any }) {
   return (
     <>
@@ -264,7 +264,7 @@ function LabelInput({ label, placeholder, ...props }: { label: string; placehold
 }
 
 const styles = StyleSheet.create({
-  container: { paddingVertical: "5%", paddingHorizontal: "5%" },
+  container: { paddingHorizontal: "5%" },
   voltar: { justifyContent: "center", alignItems: "flex-start", marginVertical: 10 },
   header: { flexDirection: "row" },
   logoText: {

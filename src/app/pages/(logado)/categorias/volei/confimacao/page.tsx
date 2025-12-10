@@ -4,8 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import colors from '@/constants/Colors';
+import { notifyTrainingConfirmationOnce } from '@/lib/localNotifications';
 
-export default function ConfirmacaoMeditacao() {
+export default function ConfirmacaoVolei() {
   const router = useRouter();
   const params = useLocalSearchParams<{
     localNome?: string;
@@ -18,6 +19,16 @@ export default function ConfirmacaoMeditacao() {
   const localEndereco = params.localEndereco || '';
   const horario = params.horario || 'Horário não informado';
   const nivel = params.nivel || '';
+
+  React.useEffect(() => {
+    const keyBase = `${localNome}-${horario}`.replace(/\s+/g, '-');
+    const trainingKey = `training-confirmation-${keyBase}`;
+    notifyTrainingConfirmationOnce({
+      trainingKey,
+      title: "Treino confirmado com Sucesso!",
+      body: `Sua aula de Volêi em ${localNome} às ${horario} foi confirmada.`,
+    }).catch(() => {});
+  }, [localNome, horario]);
 
   return (
     <SafeAreaView style={styles.container}>

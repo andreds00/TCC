@@ -544,7 +544,7 @@ export default function MeusTreinos() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.white, marginTop: 10 }}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <FlatList
           data={filteredDevices}

@@ -249,7 +249,7 @@ export default function Metas() {
 }
 
 const styles = StyleSheet.create({
-  /* seu styles aqui (mantive o original para não poluir) */
+  
   container: { flex: 1, backgroundColor: '#FFFFFF' },
   headerImage: {
     width: '100%',

@@ -5,7 +5,7 @@ import { MaterialIcons, Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { useAuth } from '@/src/contextos/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { router } from 'expo-router';
-import Colors from '@/constants/Colors';
+import colors from '@/constants/Colors';
 
 export default function Perfil() {
 
@@ -25,12 +25,12 @@ export default function Perfil() {
     }
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white, paddingVertical: 20 }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.white, marginTop: 10  }}>
 
             <View style={styles.container}>
                 <View style={styles.header}>
                     <TouchableOpacity activeOpacity={0.6} onPress={() => router.replace('/pages/(logado)/home/page')}>
-                        <MaterialIcons name="arrow-back-ios" size={24} color={Colors.darkBlue} />
+                        <MaterialIcons name="arrow-back-ios" size={24} color={colors.darkBlue} />
                     </TouchableOpacity>
 
 
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingHorizontal: 20,
-        backgroundColor: Colors.white,
+        backgroundColor: colors.white,
     },
     header: {
         flexDirection: "row",
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 20,
         fontWeight: "bold",
-        color: Colors.darkBlue,
+        color: colors.darkBlue,
         alignSelf: "center",
     },
     avatarContainer: {

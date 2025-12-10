@@ -21,15 +21,15 @@ import {
 } from '@gorhom/bottom-sheet';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types';
-// ajuste este import para o local do seu cliente Supabase, se necessário
+
 import { supabase } from '@/lib/supabase';
 
 type SupabaseRow = {
-  id: string; // uuid
+  id: string; 
   user_id: string;
-  data: string; // date (YYYY-MM-DD)
-  horario?: string; // text
-  esporte?: string; // text
+  data: string; 
+  horario?: string; 
+  esporte?: string; 
   created_at?: string;
 };
 
@@ -58,7 +58,7 @@ export default function Home() {
     []
   );
 
-  // ---------- Último treino via Supabase ----------
+  
   const [lastWorkout, setLastWorkout] = useState<SupabaseRow | null>(null);
   const [loadingLast, setLoadingLast] = useState(true);
   const [lastError, setLastError] = useState<string | null>(null);
@@ -79,19 +79,17 @@ export default function Home() {
         setLoadingLast(true);
         setLastError(null);
 
-        // Data de hoje em YYYY-MM-DD (sem hora) para comparar com a coluna date
+       
         const today = new Date();
         const yyyy = today.getFullYear();
         const mm = String(today.getMonth() + 1).padStart(2, '0');
         const dd = String(today.getDate()).padStart(2, '0');
         const todayStr = `${yyyy}-${mm}-${dd}`;
 
-        /**
-         * Ajuste o nome da tabela abaixo se o seu nome for diferente.
-         * Usei `.maybeSingle()` para evitar o erro PGRST116 quando não houver linhas.
-         */
+       
+       
         const { data, error } = await supabase
-          .from('treinos') // <-- troque 'treinos' se necessário
+          .from('treinos') 
           .select('*')
           .eq('user_id', user.id)
           .lt('data', todayStr)
@@ -110,10 +108,10 @@ export default function Home() {
         } else if (data) {
           if (mounted) setLastWorkout(data);
         } else {
-          // data === null -> nenhum treino passado encontrado
+          
           if (mounted) {
             setLastWorkout(null);
-            setLastError(null); // sem erro, apenas ausência de dados
+            setLastError(null); 
           }
         }
       } catch (err) {
@@ -151,7 +149,7 @@ export default function Home() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }} edges={['top', 'left', 'right']}>
       <GestureHandlerRootView style={styles.container}>
         <BottomSheetModalProvider>
           <ScrollView
@@ -416,6 +414,7 @@ const styles = StyleSheet.create({
   main: {
     width: '100%',
     padding: 20,
+    paddingBottom: 10,
     gap: 12,
   },
   welcomeText: {

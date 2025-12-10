@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import colors from '@/constants/Colors';
+import { notifyTrainingConfirmationOnce } from '@/lib/localNotifications';
 
-export default function ConfirmacaoMeditacao() {
+export default function ConfirmacaoBasquete() {
   const router = useRouter();
   const params = useLocalSearchParams<{
     localNome?: string;
@@ -19,11 +20,21 @@ export default function ConfirmacaoMeditacao() {
   const horario = params.horario || 'Horário não informado';
   const nivel = params.nivel || '';
 
+  useEffect(() => {
+    const keyBase = `${localNome}-${horario}`.replace(/\s+/g, '-');
+    const trainingKey = `training-confirmation-${keyBase}`;
+
+    notifyTrainingConfirmationOnce({
+      trainingKey,
+      title: "Treino confirmado com Sucesso!",
+      body: `Sua aula de Basquete em ${localNome} às ${horario} foi confirmada.`,
+    }).catch(() => {});
+  }, [localNome, horario]);
+
   return (
     <SafeAreaView style={styles.container}>
-
       <LinearGradient
-        style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+        style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         colors={[colors.darkBlue, colors.blue, colors.lightBlue]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -31,10 +42,8 @@ export default function ConfirmacaoMeditacao() {
         <View style={styles.background}>
           <View style={styles.content}>
             <Text style={styles.message}>
-              Parabéns por confirmar sua aula de 
-              <Text style={styles.bold}>
-               {""} Basquete!
-              </Text>
+              Parabéns por confirmar sua aula de
+              <Text style={styles.bold}> Basquete!</Text>
             </Text>
 
             <View style={styles.detailsContainer}>
@@ -138,10 +147,9 @@ const styles = StyleSheet.create({
   },
   confiraEmail: {
     marginTop: 10,
-    textAlign:'center',
+    textAlign: 'center',
     color: colors.white,
     fontSize: 16,
     fontWeight: '600',
-
   },
 });

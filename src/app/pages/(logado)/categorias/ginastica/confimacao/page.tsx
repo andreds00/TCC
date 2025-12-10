@@ -2,8 +2,9 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { notifyTrainingConfirmationOnce } from '@/lib/localNotifications';
 
-export default function ConfirmacaoMeditacao() {
+export default function ConfirmacaoGinastica() {
   const router = useRouter();
   const params = useLocalSearchParams<{
     localNome?: string;
@@ -17,13 +18,23 @@ export default function ConfirmacaoMeditacao() {
   const horario = params.horario || 'Horário não informado';
   const nivel = params.nivel || '';
 
+  React.useEffect(() => {
+    const keyBase = `${localNome}-${horario}`.replace(/\s+/g, '-');
+    const trainingKey = `training-confirmation-${keyBase}`;
+    notifyTrainingConfirmationOnce({
+      trainingKey,
+      title: "Treino confirmado com Sucesso!",
+      body: `Sua aula de Ginástica em ${localNome} às ${horario} foi confirmada.`,
+    }).catch(() => {});
+  }, [localNome, horario]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.background}>
         <View style={styles.content}>
           <Text style={styles.message}>
             Parabéns por confirmar sua aula de{"\n"}
-            <Text style={styles.bold}>Meditação {nivel ? `(${nivel})` : ''}</Text> no{" "}
+            <Text style={styles.bold}>Ginástica {nivel ? `(${nivel})` : ''}</Text> no{" "}
             <Text style={styles.bold}>{localNome}</Text>
             {localEndereco ? `\n${localEndereco}` : ''}
             {"\n"}às <Text style={styles.bold}>{horario}!</Text>

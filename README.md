@@ -153,9 +153,10 @@ O desenvolvimento seguiu conceitos de:
 
 ## 8. Trabalhos Futuros
 - Histórico em nuvem
-- Notificações
+- API para coleta de dados simultâneos
 - Gráficos de desempenho
 - IA para recomendações personalizadas
+- Utilização da tecnologia SMTP para confirmação de Treinos por e-mail
 
 ---
 

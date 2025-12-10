@@ -1,16 +1,45 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, useLocalSearchParams, router } from 'expo-router';
+import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import colors from '@/constants/Colors';
+import { sendTrainConfirmationNotificationOnce } from '@/lib/localNotifications';
 
 export default function ConfirmacaoHotYoga() {
+  const handleConfirmar = async () => {
+    router.replace('/pages/(logado)/home/page')
+    Alert.alert('Parabéns', 'Sua presença foi confirmada com sucesso.');
+    
+    try {
+      await sendTrainConfirmationNotificationOnce();
+      
+    } catch (e) {
+      console.warn("Erro ao enviar notificação de confirmação:", e);
+    }
+    
 
+    
+  };
+
+  const handleDesmarcar = () => {
+    Alert.alert('Confirmação', 'Sua presença foi desmarcada com sucesso.');
+
+    setTimeout(() => {
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace('/pages/(logado)/home/page');
+      }
+    }, 10);
+  };
+
+  const handleFechar = () => {
+    router.replace('/pages/(logado)/home/page');
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-
       <LinearGradient
         style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         colors={[colors.darkBlue, colors.blue, colors.lightBlue]}
@@ -26,51 +55,17 @@ export default function ConfirmacaoHotYoga() {
               às <Text style={styles.bold}>10h00?</Text>
             </Text>
 
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => {
-                Alert.alert('Parabéns', 'Sua presença foi confirmada com sucesso.');
-
-                setTimeout(() => {
-                  if (router.canGoBack()) {
-                    router.back();
-                  } else {
-                    router.replace('/pages/(logado)/home/page');
-                  }
-                }, 100);
-              }}
-            >
+            <TouchableOpacity style={styles.button} onPress={handleConfirmar}>
               <Text style={styles.buttonText}>Confirmar Presença</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => {
-                Alert.alert('Confirmação', 'Sua presença foi desmarcada com sucesso.');
-
-                setTimeout(() => {
-                  if (router.canGoBack()) {
-                    router.back();
-                  } else {
-                    router.replace('/pages/(logado)/home/page');
-                  }
-                }, 100);
-              }}
-            >
+            <TouchableOpacity style={styles.button} onPress={handleDesmarcar}>
               <Text style={styles.buttonText}>Desmarcar presença</Text>
             </TouchableOpacity>
 
-
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => {
-               
-                  router.replace('/pages/(logado)/home/page');}}
-               
-            >
+            <TouchableOpacity style={styles.button} onPress={handleFechar}>
               <Text style={styles.buttonText}>Fechar</Text>
             </TouchableOpacity>
-
           </View>
         </View>
       </LinearGradient>
@@ -100,29 +95,6 @@ const styles = StyleSheet.create({
   bold: {
     fontWeight: 'bold',
   },
-  detailsContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 30,
-    width: '100%',
-  },
-  detailRow: {
-    flexDirection: 'row',
-    marginBottom: 12,
-    alignItems: 'flex-start',
-  },
-  detailLabel: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-    width: 100,
-  },
-  detailValue: {
-    color: '#fff',
-    fontSize: 16,
-    flex: 1,
-  },
   button: {
     marginTop: 20,
     backgroundColor: '#fff',
@@ -136,13 +108,5 @@ const styles = StyleSheet.create({
     color: '#003973',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  confiraEmail: {
-    marginTop: 10,
-    textAlign: 'center',
-    color: colors.white,
-    fontSize: 16,
-    fontWeight: '600',
-
   },
 });

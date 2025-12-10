@@ -30,14 +30,14 @@ export default function HistoricoTreinos() {
     const [treinos, setTreinos] = useState<Treino[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
-    // seleção de intervalo com react-native-calendars
-    const [startDate, setStartDate] = useState<string | null>(null); // YYYY-MM-DD
+    
+    const [startDate, setStartDate] = useState<string | null>(null); 
     const [endDate, setEndDate] = useState<string | null>(null);
 
-    // seleção temporária enquanto o usuário escolhe
+    
     const [selectingStart, setSelectingStart] = useState<boolean>(true);
 
-    // -------- helpers (únicos, sem duplicatas) --------
+    
     function hash(str: string) {
         let h = 0;
         for (let i = 0; i < str.length; i++) h = Math.imul(31, h) + str.charCodeAt(i) | 0;
@@ -54,7 +54,7 @@ export default function HistoricoTreinos() {
         };
     }
 
-    // ---------- utilitarios de data ----------
+    
     const formatToYYYYMMDD = (d: Date) => {
         const yyyy = d.getFullYear();
         const mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -71,7 +71,7 @@ export default function HistoricoTreinos() {
         }
     };
 
-    // ---------- marcação para o react-native-calendars (period) ----------
+    
     const buildMarkedDates = useCallback(() => {
         const marked: Record<string, any> = {};
         if (!startDate) return marked;
@@ -96,7 +96,7 @@ export default function HistoricoTreinos() {
         return marked;
     }, [startDate, endDate]);
 
-    // -------- busca no Supabase (com filtro opcional de datas) --------
+    
     const fetchTreinos = async (opts?: { start?: string | null; end?: string | null }) => {
         if (!user?.id) {
             setTreinos([]);
@@ -114,12 +114,12 @@ export default function HistoricoTreinos() {
                 .order('data', { ascending: false })
                 .order('horario', { ascending: false });
 
-            // ---- NOVA LÓGICA: se apenas start definido -> busca exata por essa data (eq)
+            
             if (opts?.start && !opts?.end) {
                 console.warn('Filtrando apenas por data exata:', opts.start);
                 query = query.eq('data', opts.start);
             } else {
-                // se ambos definidos -> intervalo; se nenhum -> tudo
+                
                 if (opts?.start) {
                     console.warn('Aplicando filtro start >=', opts.start);
                     query = query.gte('data', opts.start);
@@ -148,13 +148,12 @@ export default function HistoricoTreinos() {
 
     useEffect(() => {
         fetchTreinos();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        
     }, [user?.id]);
 
-    // aplicar filtro (startDate/endDate em formato YYYY-MM-DD)
+    
     const aplicarFiltro = () => {
-        // se apenas startDate definido, busca a partir daquela data exata (eq)
-        // se ambos definidos, busca intervalo inclusive.
+        
         fetchTreinos({ start: startDate ?? null, end: endDate ?? null });
     };
 
@@ -165,11 +164,11 @@ export default function HistoricoTreinos() {
         fetchTreinos();
     };
 
-    // quando o usuário pressiona um dia no calendário
+    
     const onDayPress = (day: any) => {
-        const dateStr = day.dateString; // YYYY-MM-DD
+        const dateStr = day.dateString; 
 
-        // inicia nova seleção quando não tem start ou quando já existia um intervalo completo
+        
         if (!startDate || (startDate && endDate) || (!selectingStart && !endDate)) {
             setStartDate(dateStr);
             setEndDate(null);
@@ -177,7 +176,7 @@ export default function HistoricoTreinos() {
             return;
         }
 
-        // se já existe startDate e não existe endDate -> definir end
+        
         if (startDate && !endDate) {
             const start = new Date(startDate + 'T00:00:00');
             const clicked = new Date(dateStr + 'T00:00:00');
@@ -192,16 +191,16 @@ export default function HistoricoTreinos() {
         }
     };
 
-    // >>> APLICA FILTRO AUTOMÁTICO: quando endDate muda (aplica intervalo)
+    
     useEffect(() => {
         if (endDate) {
             aplicarFiltro();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        
     }, [endDate]);
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.white, marginTop: 10  }}>
 
             <View style={styles.container}>
                 <View style={styles.header}>
@@ -221,7 +220,7 @@ export default function HistoricoTreinos() {
                 <View style={styles.main}>
                     <Text style={styles.welcomeText}>Confira seus resultados!</Text>
 
-                    {/* CALENDAR RANGE (react-native-calendars) */}
+                    
                     <View style={{ marginTop: 12 }}>
                         <Calendar
                             style={{ width: '80%', alignSelf: 'center', borderRadius: 30, padding: 10, borderWidth: 1, borderColor: colors.darkBlue, paddingVertical: 10 }}
@@ -313,7 +312,7 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: "column",
         backgroundColor: colors.white,
-        paddingVertical: '5%',
+        
         paddingHorizontal: '5%',
         gap: 5,
     },

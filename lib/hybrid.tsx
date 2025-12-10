@@ -20,7 +20,7 @@ export async function startHybridStepsSubscription(
 ) {
   stopHybrid();
 
-  // 1️⃣ Health Connect primeiro
+  
   try {
     const hc = await getStepsCaloriesActive();
     if (hc && hc.steps !== undefined) {
@@ -29,13 +29,13 @@ export async function startHybridStepsSubscription(
     }
   } catch {}
 
-  // 2️⃣ Fallback BLE
+  
   if (!device) {
     onUpdate(null, null, "none");
     return { source: "none" };
   }
 
-  // Primeiro tenta parser ESPECÍFICO DO SEU RELÓGIO
+  
   try {
     const sub = monitorStepsAndCalories(device, (steps, calories) =>
       onUpdate(steps, calories, "ble")
@@ -44,7 +44,7 @@ export async function startHybridStepsSubscription(
     return { source: "ble", mode: "specific" };
   } catch {}
 
-  // 3️⃣ Se não existir o parser, tenta AUTO-DETECÇÃO
+  
   const candidates = await findNotifyCharacteristics(device);
 
   for (const c of candidates) {

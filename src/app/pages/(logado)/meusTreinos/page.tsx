@@ -14,7 +14,7 @@ import {
 import { Calendar } from 'react-native-calendars';
 import { MaskedTextInput } from "react-native-mask-text";
 import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/src/contextos/AuthContext'; // Contexto de autenticação
+import { useAuth } from '@/src/contextos/AuthContext'; 
 
 const MONTHS = [
     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -42,7 +42,7 @@ export default function MeusTreinos() {
         if (user) fetchAgendamentos();
     }, [user, selecionado]);
 
-    // Buscar agendamentos do usuário
+    
 
     const validarHorario = (texto: string) => {
         const [h, m] = texto.split(":").map(Number);
@@ -50,7 +50,7 @@ export default function MeusTreinos() {
         return texto;
     };
 
-    // Confirmar seleção e salvar no Supabase
+    
     const confirmarSelecao = async () => {
         if (!user || !tempDate || !tempTime || !selectedSport) return;
 
@@ -90,7 +90,7 @@ export default function MeusTreinos() {
             return;
         }
 
-        // Atualiza lista local
+        
         setAgendamentos((prev) => prev.filter((item) => item.id !== id));
         alert("Agendamento excluído!");
     };
@@ -130,7 +130,7 @@ export default function MeusTreinos() {
         }
     };
 
-    // Atualiza automaticamente quando o mês/ano ou tipo muda
+   
     useEffect(() => {
         if (user) fetchAgendamentos();
     }, [month, year, selecionado]);
@@ -165,7 +165,7 @@ export default function MeusTreinos() {
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <BottomSheetModalProvider>
                     <View style={styles.container}>
-                        {/* Header */}
+                        
                         <View style={styles.header}>
                             <TouchableOpacity activeOpacity={0.6} onPress={() => router.replace('/pages/(logado)/home/page')}>
                                 <MaterialIcons name="arrow-back-ios" size={24} color={colors.darkBlue} />
@@ -173,7 +173,7 @@ export default function MeusTreinos() {
                             <Text style={styles.title}>Meus Treinos</Text>
                         </View>
 
-                        {/* Subtitle */}
+                       
                         <View style={styles.containerSubtitle}>
                             <Text style={styles.subtitle}>
                                 {selecionado === "Treinos"
@@ -182,7 +182,7 @@ export default function MeusTreinos() {
                             </Text>
                         </View>
 
-                        {/* Switch entre Treinos / Consultas */}
+                        
                         <View style={{ width: "100%", alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }}>
                             <TouchableOpacity
                                 style={[styles.botao, selecionado === "Treinos" && styles.ativo]}
@@ -197,11 +197,11 @@ export default function MeusTreinos() {
                             </TouchableOpacity>
                         </View>
 
-                        {/* Filtro de mês */}
+                        
                         <View style={styles.monthRow}>
                             <Pressable style={styles.monthPast} onPress={prevMonth}>
                                 <Text style={styles.monthPastLabel}>
-                                    {MONTHS[(month - 1 + 12) % 12]} {/* Corrige exibição em janeiro/dezembro */}
+                                    {MONTHS[(month - 1 + 12) % 12]} 
                                 </Text>
                             </Pressable>
 
@@ -222,7 +222,7 @@ export default function MeusTreinos() {
                             </Pressable>
                         </View>
 
-                        {/* Lista de agendamentos filtrados */}
+                       
                         <View style={{ flex: 1, marginTop: 10 }}>
                             {loading ? (
                                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -240,17 +240,17 @@ export default function MeusTreinos() {
 
                                         return (
                                             <View style={styles.card}>
-                                                {/* Esquerda: data */}
+                                                
                                                 <View style={styles.dateContainer}>
                                                     <Text style={styles.weekday}>{diaSemana.charAt(0).toUpperCase() + diaSemana.slice(1)}</Text>
                                                     <Text style={styles.day}>{dia}</Text>
                                                     <Text style={styles.month}>{mes}</Text>
                                                 </View>
 
-                                                {/* Linha divisória */}
+                                                
                                                 <View style={styles.divider} />
 
-                                                {/* Direita: informações */}
+                                                
                                                 <View style={styles.infoContainer}>
                                                     {selecionado === 'Treinos' ? (
                                                         <>
@@ -304,7 +304,7 @@ export default function MeusTreinos() {
                             )}
                         </View>
 
-                        {/* Botão adicionar */}
+                        
                         <TouchableOpacity
                             activeOpacity={0.6}
                             style={styles.botaoAdd}
@@ -313,7 +313,7 @@ export default function MeusTreinos() {
                             <MaterialIcons name="add" size={34} color={colors.white} />
                         </TouchableOpacity>
 
-                        {/* Bottom Sheet */}
+                        
                         <BottomSheetModal
                             ref={bottomSheetRef}
                             index={1}
@@ -392,7 +392,7 @@ export default function MeusTreinos() {
                                 </View>
                             </BottomSheetScrollView>
 
-                            {/* Botão fixo */}
+                            
                             <View style={styles.bottomButtonContainer}>
                                 <TouchableOpacity
                                     style={[styles.botaoConfirmar, !(tempDate && tempTime && selectedSport) && { opacity: 0.5 }]}
