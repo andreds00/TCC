@@ -13,27 +13,27 @@ export default function InitialScreen() {
     const [passwordVisible, setPasswordVisible] = React.useState(true);
 
     async function handleSignIn() {
-  setLoading(true);
-  try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+        setLoading(true);
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
 
-    if (error) {
-      console.log("Supabase signIn error:", error.message);
-      Alert.alert("Erro", error.message || "Email ou senha inválidos");
-      return;
+            if (error) {
+                console.log("Supabase signIn error:", error.message);
+                Alert.alert("Erro", error.message || "Email ou senha inválidos");
+                return;
+            }
+
+
+        } catch (e: any) {
+            console.log("SignIn catch:", e?.message || e);
+            Alert.alert("Erro de rede", "Não foi possível conectar. Tente novamente.");
+        } finally {
+            setLoading(false);
+        }
     }
-
-    // sucesso: o onAuthStateChange do _layout deve redirecionar
-  } catch (e: any) {
-    console.log("SignIn catch:", e?.message || e);
-    Alert.alert("Erro de rede", "Não foi possível conectar. Tente novamente.");
-  } finally {
-    setLoading(false);
-  }
-}
 
     function handlePress() {
         setPasswordVisible(!passwordVisible);
@@ -49,7 +49,7 @@ export default function InitialScreen() {
 
 
                     <View style={styles.header}>
-                        {/* <Image source={require('@/assets/images/logo.png')} style={styles.logo} /> */}
+
                         <Text style={styles.title}>Login</Text>
                         <Text style={styles.subtitle}>Que bom que você voltou! Entre e continue a melhorar seus resultados!</Text>
                     </View>
@@ -60,7 +60,7 @@ export default function InitialScreen() {
                             <Text style={styles.label}>Endereço de email</Text>
                             <View style={styles.form}>
 
-                                <TextInput placeholder="Digite seu email" value={email} onChangeText={setEmail} style={styles.input} textContentType='emailAddress' placeholderTextColor={colors.darkGray}/>
+                                <TextInput placeholder="Digite seu email" value={email} onChangeText={setEmail} style={styles.input} textContentType='emailAddress' placeholderTextColor={colors.darkGray} />
                                 <MaterialIcons name="email" size={24} color={colors.darkBlue} style={styles.icon} />
 
                             </View>
@@ -71,34 +71,34 @@ export default function InitialScreen() {
                             <Text style={styles.label}>Digite sua senha</Text>
                             <View style={styles.form}>
 
-                                <TextInput placeholder="Senha" secureTextEntry={passwordVisible} value={password} onChangeText={setPassword} style={styles.input} placeholderTextColor={colors.darkGray} textContentType='password'/>
+                                <TextInput placeholder="Senha" secureTextEntry={passwordVisible} value={password} onChangeText={setPassword} style={styles.input} placeholderTextColor={colors.darkGray} textContentType='password' />
                                 <TouchableOpacity onPress={handlePress}>
                                     <Ionicons name={passwordVisible ? 'eye-off-outline' : 'eye-outline'} size={24} color={colors.darkBlue} style={styles.icon} />
                                 </TouchableOpacity>
 
+                            </View>
                         </View>
+
+                        <Pressable style={{ width: '80%' }}>
+                            <Link href={'/pages/(deslogado)/senha/page'} style={styles.esqueciSenha}>Esqueci minha senha</Link>
+                        </Pressable>
+
+                        <TouchableOpacity activeOpacity={0.6} style={styles.button} onPressIn={() => { handleSignIn() }}>
+                            {loading ? <ActivityIndicator color={colors.white} /> : <Text style={styles.buttonText}>Entrar</Text>}
+                        </TouchableOpacity>
+
+                        <Pressable style={styles.buttonVoltar} onPressOut={() => { router.back() }}>
+                            <Text style={styles.buttonVoltarText}>Voltar</Text>
+                        </Pressable>
+
+
+
+
                     </View>
-
-                    <Pressable style={{ width: '80%' }}>
-                        <Link href={'/pages/(deslogado)/senha/page'} style={styles.esqueciSenha}>Esqueci minha senha</Link>
-                    </Pressable>
-
-                    <TouchableOpacity activeOpacity={0.6} style={styles.button} onPressIn={() => { handleSignIn() }}>
-                        {loading ? <ActivityIndicator color={colors.white} /> : <Text style={styles.buttonText}>Entrar</Text>}
-                    </TouchableOpacity>
-
-                    <Pressable style={styles.buttonVoltar} onPressOut={() => { router.back() }}>
-                        <Text style={styles.buttonVoltarText}>Voltar</Text>
-                    </Pressable>
-
-
 
 
                 </View>
-
-
-            </View>
-        </ScrollView>
+            </ScrollView>
         </SafeAreaView >
     );
 }

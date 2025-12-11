@@ -129,5 +129,5 @@ function AuthObserver() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
+  root: { flex: 1, fontFamily: 'Poppins_400Regular' },
 });

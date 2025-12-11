@@ -13,12 +13,14 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anonymous.BodyMoove",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
-      
       "minSdkVersion": 26,
-
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyCjqzmGElJkuDPEDVQQNqsOb-edZYauSto"
@@ -34,7 +36,8 @@
         "android.permission.BLUETOOTH_SCAN",
         "android.permission.BLUETOOTH_CONNECT",
         "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.ACTIVITY_RECOGNITION"
+        "android.permission.ACTIVITY_RECOGNITION",
+        "android.permission.ACCESS_COARSE_LOCATION"
       ],
       "healthConnect": {
         "permissions": [

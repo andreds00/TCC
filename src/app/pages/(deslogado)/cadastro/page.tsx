@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, ScrollView, SafeAreaView, TouchableOpacity, ActivityIndicator, Alert, } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, ScrollView, TouchableOpacity, ActivityIndicator, Alert, } from 'react-native';
 import colors from '@/constants/Colors';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { supabase } from '@/lib/supabase'
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Cadastro() {
     const [name, setName] = React.useState('');
@@ -33,7 +34,7 @@ export default function Cadastro() {
         } else {
             Alert.alert('Usuário cadastrado com sucesso', 'Agora você pode realizar seu login!');
             setLoading(false);
-            router.replace('/pages/(deslogado)/login/page');
+            router.push('/pages/(deslogado)/login/page');
             return;
         }
 
@@ -181,6 +182,7 @@ const styles = StyleSheet.create({
         flex: 1,
         minHeight: 40,
         fontSize: 16,
+        color: colors.darkBlue
     },
     icon: {
         marginLeft: 10,
