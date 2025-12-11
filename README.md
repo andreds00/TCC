@@ -17,7 +17,7 @@ Desenvolvimento de Sistemas
 ### Instituição
 Faculdade SENAI "Naldir Dias de Figueiredo" - 119
 
-### Orientador
+### Orientadores
 - Thier Alarcon
 - Lucas Gonzalez
 - Vitor Lima
